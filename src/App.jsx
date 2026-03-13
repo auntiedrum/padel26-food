@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Navigation, Clock, Star, Utensils, ChevronLeft, Info, Leaf, PoundSterling, List, Map as MapIcon, ExternalLink } from 'lucide-react';
+import { MapPin, Navigation, Clock, Star, Utensils, ChevronLeft, List, Map as MapIcon, ExternalLink } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { useNavigate, useLocation, Routes, Route } from 'react-router-dom';
@@ -351,8 +351,11 @@ export default function App() {
   const [activeView, setActiveView] = useState('list');
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [nukedIds, setNukedIds] = useState(() => {
-    const saved = localStorage.getItem('nukedRestaurants');
-    return saved ? JSON.parse(saved) : [];
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('nukedRestaurants');
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
   });
 
   const visibleRestaurants = restaurants.filter(r => !nukedIds.includes(r.id));
@@ -386,7 +389,7 @@ export default function App() {
   };
 
   const nukeRestaurant = (id) => {
-    if (confirm('Nuke this place? You will never see it again.')) {
+    if (typeof window !== 'undefined' && confirm('Nuke this place? You will never see it again.')) {
       const newNuked = [...nukedIds, id];
       setNukedIds(newNuked);
       localStorage.setItem('nukedRestaurants', JSON.stringify(newNuked));
