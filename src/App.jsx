@@ -258,7 +258,16 @@ const createCustomIcon = (rating = null, isHotel = false, flag = "") => {
   });
 };
 
-function MapView({ onSelect }) {
+const convertEurToGbp = (eurRange) => {
+  if (!eurRange || eurRange.includes('Hotel')) return null;
+  const matches = eurRange.match(/\d+/g);
+  if (!matches) return null;
+  const rate = 0.85;
+  const gbpMatches = matches.map(m => Math.round(parseInt(m) * rate));
+  return `£${gbpMatches[0]} - £${gbpMatches[1]}`;
+};
+
+function MapView({ onSelect, restaurants: places }) {
   return (
     <div className="w-full h-full bg-neutral-900">
       <MapContainer 
@@ -279,46 +288,58 @@ function MapView({ onSelect }) {
           </Popup>
         </Marker>
 
-        {restaurants.map((place) => (
-          <Marker 
-            key={place.id} 
-            position={[place.lat, place.lng]} 
-            icon={createCustomIcon(place.rating, false, place.flag)}
-          >
-            <Popup>
-              <div className="flex flex-col gap-2 min-w-[220px]">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-bold text-[#0E2433] leading-tight text-sm">{place.name}</h4>
-                    <p className="text-[10px] text-[#2E59FB] uppercase font-black tracking-widest flex items-center gap-1">
-                      <span>{place.flag}</span>
-                      <span>{place.cuisine}</span>
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1 bg-[#EEFC2C] px-1.5 py-0.5 rounded-full">
-                    <Star size={10} className="text-black fill-black" />
-                    <span className="text-[10px] font-black text-black">{place.rating}</span>
-                  </div>
-                </div>
-                
-                <div className="space-y-1 py-1 border-t border-gray-100 mt-1">
-                  <div className="flex items-center gap-2 text-[11px] text-gray-500">
-                    <Clock size={12} className="text-[#2E59FB]" />
-                    <span className="font-semibold">{place.travel.split('(')[0]}</span>
-                  </div>
-                </div>
+        {places.map((place) => {
+          const walkTime = parseInt(place.travel.match(/\d+/)?.[0] || 0);
+          const showTaxiInGbp = walkTime > 15;
+          const gbpTaxi = convertEurToGbp(place.taxiRank);
 
-                <button 
-                  onClick={() => onSelect(place)}
-                  className="w-full bg-[#2E59FB] text-white mt-1 py-2.5 rounded-full text-xs font-black flex items-center justify-center gap-2 hover:bg-[#1a44e5] transition-all"
-                >
-                  <span>VIEW DOSSIER</span>
-                  <ExternalLink size={12} />
-                </button>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+          return (
+            <Marker 
+              key={place.id} 
+              position={[place.lat, place.lng]} 
+              icon={createCustomIcon(place.rating, false, place.flag)}
+            >
+              <Popup>
+                <div className="flex flex-col gap-2 min-w-[220px]">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-bold text-[#0E2433] leading-tight text-sm">{place.name}</h4>
+                      <p className="text-[10px] text-[#2E59FB] uppercase font-black tracking-widest flex items-center gap-1">
+                        <span>{place.flag}</span>
+                        <span>{place.cuisine}</span>
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1 bg-[#EEFC2C] px-1.5 py-0.5 rounded-full">
+                      <Star size={10} className="text-black fill-black" />
+                      <span className="text-[10px] font-black text-black">{place.rating}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1 py-1 border-t border-gray-100 mt-1">
+                    <div className="flex items-center gap-2 text-[11px] text-gray-500">
+                      <Clock size={12} className="text-[#2E59FB]" />
+                      <span className="font-semibold">{place.travel.split('(')[0]} ({walkTime}m)</span>
+                    </div>
+                    {showTaxiInGbp && gbpTaxi && (
+                      <div className="flex items-center gap-2 text-[11px] text-[#2E59FB] font-bold">
+                        <Navigation size={12} />
+                        <span>Taxi: Approx {gbpTaxi}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <button 
+                    onClick={() => onSelect(place)}
+                    className="w-full bg-[#2E59FB] text-white mt-1 py-2.5 rounded-full text-xs font-black flex items-center justify-center gap-2 hover:bg-[#1a44e5] transition-all"
+                  >
+                    <span>VIEW DOSSIER</span>
+                    <ExternalLink size={12} />
+                  </button>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </div>
   );
@@ -329,6 +350,12 @@ export default function App() {
   const location = useLocation();
   const [activeView, setActiveView] = useState('list');
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [nukedIds, setNukedIds] = useState(() => {
+    const saved = localStorage.getItem('nukedRestaurants');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const visibleRestaurants = restaurants.filter(r => !nukedIds.includes(r.id));
 
   useEffect(() => {
     const path = location.pathname;
@@ -356,6 +383,22 @@ export default function App() {
 
   const handleBack = () => {
     navigate('/');
+  };
+
+  const nukeRestaurant = (id) => {
+    if (confirm('Nuke this place? You will never see it again.')) {
+      const newNuked = [...nukedIds, id];
+      setNukedIds(newNuked);
+      localStorage.setItem('nukedRestaurants', JSON.stringify(newNuked));
+      navigate('/');
+    }
+  };
+
+  const goToNext = (currentId) => {
+    const currentIndex = visibleRestaurants.findIndex(r => r.id === currentId);
+    if (currentIndex === -1) return;
+    const nextIndex = (currentIndex + 1) % visibleRestaurants.length;
+    navigate(`/restaurant/${visibleRestaurants[nextIndex].id}`);
   };
 
   const generateMapsUrl = (restaurantName, isWalkable) => {
@@ -415,7 +458,7 @@ export default function App() {
             }`}
           >
             <div className="p-6 space-y-6">
-              {restaurants.map((place) => (
+              {visibleRestaurants.map((place) => (
                 <button
                   key={place.id}
                   onClick={() => handleSelect(place)}
@@ -469,7 +512,7 @@ export default function App() {
               activeView === 'map' ? 'scale-100 opacity-100' : 'scale-105 opacity-0 pointer-events-none'
             }`}
           >
-            <MapView onSelect={handleSelect} />
+            <MapView onSelect={handleSelect} restaurants={visibleRestaurants} />
           </div>
 
           {/* DETAIL VIEW */}
@@ -480,18 +523,36 @@ export default function App() {
           >
             {selectedRestaurant && (
               <div className="pb-32 min-h-full flex flex-col">
-                <div className="p-8 pb-10 bg-[#2E59FB] text-white rounded-b-[48px] shadow-xl">
-                  <div className="flex items-center gap-3 mb-6">
-                    <span className="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] uppercase tracking-widest font-black rounded-full border border-white/20 flex items-center gap-1">
-                      {selectedRestaurant.flag} {selectedRestaurant.cuisine}
-                    </span>
-                    <span className="flex items-center px-3 py-1 bg-[#C8FC2C] text-black text-[10px] font-black rounded-full shadow-lg">
-                      <Star size={10} className="mr-1 fill-current" /> {selectedRestaurant.rating}
-                    </span>
+                <div className="p-8 pb-10 bg-[#2E59FB] text-white rounded-b-[48px] shadow-xl relative">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <span className="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] uppercase tracking-widest font-black rounded-full border border-white/20 flex items-center gap-1">
+                        {selectedRestaurant.flag} {selectedRestaurant.cuisine}
+                      </span>
+                      <span className="flex items-center px-3 py-1 bg-[#C8FC2C] text-black text-[10px] font-black rounded-full shadow-lg">
+                        <Star size={10} className="mr-1 fill-current" /> {selectedRestaurant.rating}
+                      </span>
+                    </div>
+                    <button 
+                      onClick={() => goToNext(selectedRestaurant.id)}
+                      className="px-4 py-2 bg-white text-[#2E59FB] text-xs font-black rounded-full shadow-lg hover:bg-[#EEFC2C] hover:text-black transition-all"
+                    >
+                      NEXT!
+                    </button>
                   </div>
-                  <h2 className="text-4xl font-black tracking-tightest leading-tight uppercase italic mb-2">
-                    {selectedRestaurant.name}
-                  </h2>
+                  
+                  <div className="flex items-center gap-4 group">
+                    <button 
+                      onClick={handleBack}
+                      className="p-1 opacity-40 hover:opacity-100 transition-opacity"
+                      title="Back to list"
+                    >
+                      <ChevronLeft size={24} />
+                    </button>
+                    <h2 className="text-4xl font-black tracking-tightest leading-tight uppercase italic flex-1">
+                      {selectedRestaurant.name}
+                    </h2>
+                  </div>
                 </div>
 
                 <div className="p-8 space-y-8 -mt-6">
@@ -568,16 +629,22 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-8 pointer-events-none">
+                <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-8 pointer-events-none flex gap-3">
                   <a
                     href={generateMapsUrl(selectedRestaurant.name, selectedRestaurant.isWalkable)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="pointer-events-auto w-full bg-[#C8FC2C] hover:bg-[#b8ea28] hover:scale-[1.02] text-black py-5 rounded-full font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-[0_15px_30px_-5px_rgba(200,252,44,0.4)]"
+                    className="pointer-events-auto flex-1 bg-[#C8FC2C] hover:bg-[#b8ea28] hover:scale-[1.02] text-black py-5 rounded-full font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-[0_15px_30px_-5px_rgba(200,252,44,0.4)]"
                   >
                     <Navigation size={22} className="fill-current" />
                     <span>Get Directions</span>
                   </a>
+                  <button 
+                    onClick={() => nukeRestaurant(selectedRestaurant.id)}
+                    className="pointer-events-auto px-6 bg-red-600 hover:bg-red-700 text-white rounded-full font-black text-[10px] uppercase tracking-widest shadow-lg transition-all"
+                  >
+                    NUKE
+                  </button>
                 </div>
               </div>
             )}
