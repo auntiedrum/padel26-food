@@ -858,33 +858,34 @@ export default function App() {
                   })()}
                 </div>
 
-                <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-3 pointer-events-none flex flex-col gap-2 z-50 bg-gradient-to-t from-[#F5F7FF] via-[#F5F7FF]/90 to-transparent">
-                  <div className="flex gap-2">
+                {/* Sticky Mobile-Style Footer Bar */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 pt-6 bg-gradient-to-t from-white via-white/40 to-transparent z-50 pointer-events-none">
+                  <div className="bg-[#0E2433] rounded-3xl p-3 shadow-2xl border border-white/10 flex items-center gap-3 pointer-events-auto max-w-[90%] mx-auto">
                     <a
                       href={generateMapsUrl(selectedRestaurant.name)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="pointer-events-auto flex-1 bg-[#C8FC2C] hover:bg-[#b8ea28] text-black py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md"
+                      className="flex-1 bg-[#C8FC2C] hover:bg-[#b8ea28] text-black py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95"
                     >
-                      <Navigation size={14} className="fill-current" />
+                      <Navigation size={16} className="fill-current" />
                       <span>Directions</span>
                     </a>
                     <button 
                       onClick={handleSausageClick}
-                      className="pointer-events-auto px-4 bg-[#2E59FB] hover:bg-[#1a44e5] text-white rounded-xl font-black text-[9px] uppercase tracking-widest shadow-md transition-all active:scale-95 whitespace-nowrap"
+                      className="px-5 bg-[#2E59FB] hover:bg-[#1a44e5] text-white py-3 rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all active:scale-95 whitespace-nowrap"
                     >
                       SAUSAGE?
                     </button>
                   </div>
+                  
                   {showSausageScore && (
                     <div 
                       onClick={handleSausageClick}
-                      className="pointer-events-auto bg-[#0E2433] text-[#C8FC2C] text-[9px] font-black uppercase tracking-widest py-1.5 px-3 rounded-lg text-center shadow-2xl border border-[#C8FC2C]/20 animate-bounce cursor-pointer hover:bg-black/80 transition-colors"
+                      className="pointer-events-auto mt-2 bg-black text-[#C8FC2C] text-[9px] font-black uppercase tracking-widest py-2 px-4 rounded-xl text-center shadow-2xl border border-[#C8FC2C]/30 animate-bounce cursor-pointer hover:bg-black/90 transition-colors mx-auto w-fit"
                     >
                       Richie high score! {sausageState.isSettled ? '🏆' : '👑'}
                     </div>
                   )}
-                  <div className="h-1 sm:hidden"></div>
                 </div>
               </div>
             )}
