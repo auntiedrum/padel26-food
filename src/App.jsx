@@ -564,29 +564,41 @@ export default function App() {
             {selectedRestaurant && (
               <div className="pb-32 min-h-full flex flex-col">
                 <div className="p-8 pb-10 bg-[#2E59FB] text-white rounded-b-[48px] shadow-xl relative">
-                  <div className="flex items-center justify-between gap-2 mb-6">
-                    <button 
-                      onClick={() => goToPrev(selectedRestaurant.id)}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-white/10 text-white text-[10px] font-black rounded-full hover:bg-white/20 transition-all border border-white/20"
-                    >
-                      <ChevronLeft size={14} /> BACK
-                    </button>
-
-                    <div className="flex items-center gap-2 flex-1 justify-center">
-                      <span className="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[9px] uppercase tracking-widest font-black rounded-full border border-white/20 truncate">
-                        {selectedRestaurant.flag} {selectedRestaurant.cuisine}
-                      </span>
-                      <span className="flex items-center px-3 py-1 bg-[#C8FC2C] text-black text-[9px] font-black rounded-full shadow-lg">
-                        <Star size={10} className="mr-1 fill-current" /> {selectedRestaurant.rating}
-                      </span>
+                  <div className="flex flex-col gap-6 mb-4">
+                    <div className="flex justify-center mt-2">
+                       <span className="text-xl sm:text-2xl font-black text-[#FF00FF] uppercase tracking-[0.2em] text-center drop-shadow-[0_0_15px_rgba(255,0,255,0.8)] crazy-flicker bg-black/20 px-6 py-3 rounded-3xl border border-[#FF00FF]/30 backdrop-blur-sm flex items-center gap-2">
+                         <span className="text-3xl">{selectedRestaurant.flag}</span>
+                         <span>{selectedRestaurant.cuisine}</span>
+                       </span>
                     </div>
 
-                    <button 
-                      onClick={() => goToNext(selectedRestaurant.id)}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-[#C8FC2C] text-black text-[10px] font-black rounded-full shadow-lg hover:bg-[#EEFC2C] transition-all"
-                    >
-                      NEXT <ChevronLeft size={14} className="rotate-180" />
-                    </button>
+                    <div className="flex items-center justify-between gap-2">
+                      <button 
+                        onClick={() => goToPrev(selectedRestaurant.id)}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-white/10 text-white text-[10px] font-black rounded-full hover:bg-white/20 transition-all border border-white/20"
+                      >
+                        <ChevronLeft size={14} /> BACK
+                      </button>
+
+                      <div className="flex items-center gap-2 flex-1 justify-center">
+                        <a 
+                          href={`https://www.google.com/search?q=${encodeURIComponent(selectedRestaurant.name + ' Barcelona reviews')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center px-4 py-2 bg-[#C8FC2C] text-black text-[10px] font-black rounded-full shadow-[0_0_15px_rgba(200,252,44,0.4)] hover:shadow-[0_0_25px_rgba(200,252,44,0.8)] hover:bg-white transition-all cursor-pointer hover:-translate-y-0.5"
+                          title="Read reviews on Google"
+                        >
+                          <Star size={12} className="mr-1.5 fill-current" /> {selectedRestaurant.rating} REVIEWS
+                        </a>
+                      </div>
+
+                      <button 
+                        onClick={() => goToNext(selectedRestaurant.id)}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-[#C8FC2C] text-black text-[10px] font-black rounded-full shadow-[0_0_15px_rgba(200,252,44,0.4)] hover:shadow-[0_0_25px_rgba(200,252,44,0.8)] hover:bg-[#EEFC2C] transition-all hover:-translate-y-0.5"
+                      >
+                        NEXT <ChevronLeft size={14} className="rotate-180" />
+                      </button>
+                    </div>
                   </div>
                   
                   <div className="flex flex-col gap-2">
