@@ -3,6 +3,26 @@ import { MapPin, Navigation, Clock, Star, Utensils, ChevronLeft, List, Map as Ma
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { useNavigate, useLocation, Routes, Route } from 'react-router-dom';
+import kobutaFront from './assets/restaurants/kobuta_front.png';
+import palmerFront from './assets/restaurants/palmer_front.png';
+import backupFront from './assets/restaurants/backup_front.png';
+
+const ImageWithFallback = ({ src, alt, className, fallback = backupFront }) => {
+  const [imgSrc, setImgSrc] = useState(src);
+
+  return (
+    <img
+      src={imgSrc}
+      alt={alt}
+      className={className}
+      onError={() => {
+        if (imgSrc !== fallback) {
+          setImgSrc(fallback);
+        }
+      }}
+    />
+  );
+};
 
 const images = {
   palmer: [
@@ -83,6 +103,7 @@ const restaurants = [
     hours: "Mon-Sun: 13:00-15:30 & 19:30-22:30",
     meatHighlights: "French Dip featuring thinly sliced roast beef; Pan-seared Filet Mignon tidbits; Wagyu Sausage skewer.",
     gallery: images.palmer,
+    heroImage: palmerFront,
     lat: 41.3551,
     lng: 2.1229
   },
@@ -100,6 +121,7 @@ const restaurants = [
     hours: "Mon-Sun: 13:30-16:00 & 19:00-22:00",
     meatHighlights: "Classic Spanish broiled steaks; Tender roast suckling pig (Cochinillo); Traditional lamb roasts.",
     gallery: images.atlantida,
+    heroImage: backupFront,
     lat: 41.3620,
     lng: 2.1362
   },
@@ -117,6 +139,7 @@ const restaurants = [
     hours: "Mon-Fri: 13:00-15:30 (Lunch) (Breakfast daily)",
     meatHighlights: "Premium Spanish Entrecote with sea salt; Slow-cooked beef short ribs; Market-fresh meat selections.",
     gallery: images.tramuntana,
+    heroImage: backupFront,
     lat: 41.3653,
     lng: 2.1274
   },
@@ -134,6 +157,7 @@ const restaurants = [
     hours: "Tue-Sun: 11:00-23:00 (Closed Mondays)",
     meatHighlights: "Legendary Carne Asada Super Burritos; Al Pastor grilled pork; Steak Super Suiza quesadillas.",
     gallery: images.farolito,
+    heroImage: backupFront,
     lat: 41.3642,
     lng: 2.1381
   },
@@ -151,6 +175,7 @@ const restaurants = [
     hours: "Wed-Sat: 13:30-16:00 & 20:30-23:00, Tue: 20:30-23:00",
     meatHighlights: "Tonkotsu with melt-in-the-mouth Chashu (pork belly); Karaage fried chicken; Chashudon rice bowls.",
     gallery: images.kobuta,
+    heroImage: kobutaFront,
     lat: 41.3753,
     lng: 2.1363
   },
@@ -168,6 +193,7 @@ const restaurants = [
     hours: "Tue-Sat: 11:30-14:00 & 17:00-21:00",
     meatHighlights: "Meat Lovers Pizza with pepperoni, bacon & ham; Penne Mignon with beef tips; Italian spicy sausage.",
     gallery: images.mamma,
+    heroImage: backupFront,
     lat: 41.3740,
     lng: 2.1400
   },
@@ -185,6 +211,7 @@ const restaurants = [
     hours: "Mon-Sun: 12:30-00:00 (Non-stop kitchen)",
     meatHighlights: "20-hour JOSPER Grilled Spanish Pork Ribs; Wagyu boneless loin; 'Machete' steak; Spanish lamb shoulder.",
     gallery: images.purabrasa,
+    heroImage: backupFront,
     lat: 41.3763,
     lng: 2.1493
   },
@@ -202,6 +229,7 @@ const restaurants = [
     hours: "Mon-Sun: 13:00-16:00 & 20:00-23:00",
     meatHighlights: "Slow-braised Beef Tongue; Premium Market Grill selections; Pollo con Mole; Short rib tacos.",
     gallery: images.filigrana,
+    heroImage: backupFront,
     lat: 41.3763,
     lng: 2.1445
   },
@@ -219,6 +247,7 @@ const restaurants = [
     hours: "Thu-Sun: 13:00-23:00, Mon-Wed: 13:00-16:00 & 19:30-23:00",
     meatHighlights: "Carrillada tender beef cheeks; Garlic & miso tenderloin tacos; Local sausage with Santa Pau beans.",
     gallery: images.canota,
+    heroImage: backupFront,
     lat: 41.3742,
     lng: 2.1559
   },
@@ -236,6 +265,7 @@ const restaurants = [
     hours: "Mon-Sun: 13:00-16:00 & 20:00-23:00",
     meatHighlights: "Award-winning Iberico ham croquettes; Catalan meat tapas; Custom dry-aged beef cuts on request.",
     gallery: images.mondore,
+    heroImage: backupFront,
     lat: 41.3790,
     lng: 2.1578
   }
@@ -404,6 +434,13 @@ export default function App() {
     navigate(`/restaurant/${visibleRestaurants[nextIndex].id}`);
   };
 
+  const goToPrev = (currentId) => {
+    const currentIndex = visibleRestaurants.findIndex(r => r.id === currentId);
+    if (currentIndex === -1) return;
+    const prevIndex = (currentIndex - 1 + visibleRestaurants.length) % visibleRestaurants.length;
+    navigate(`/restaurant/${visibleRestaurants[prevIndex].id}`);
+  };
+
   const generateMapsUrl = (restaurantName, isWalkable) => {
     const origin = encodeURIComponent("Leonardo Royal Hotel Barcelona Fira");
     const destination = encodeURIComponent(`${restaurantName}, Barcelona, Spain`);
@@ -527,130 +564,137 @@ export default function App() {
             {selectedRestaurant && (
               <div className="pb-32 min-h-full flex flex-col">
                 <div className="p-8 pb-10 bg-[#2E59FB] text-white rounded-b-[48px] shadow-xl relative">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                      <span className="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] uppercase tracking-widest font-black rounded-full border border-white/20 flex items-center gap-1">
+                  <div className="flex items-center justify-between gap-2 mb-6">
+                    <button 
+                      onClick={() => goToPrev(selectedRestaurant.id)}
+                      className="flex items-center gap-1.5 px-3 py-2 bg-white/10 text-white text-[10px] font-black rounded-full hover:bg-white/20 transition-all border border-white/20"
+                    >
+                      <ChevronLeft size={14} /> BACK
+                    </button>
+
+                    <div className="flex items-center gap-2 flex-1 justify-center">
+                      <span className="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[9px] uppercase tracking-widest font-black rounded-full border border-white/20 truncate">
                         {selectedRestaurant.flag} {selectedRestaurant.cuisine}
                       </span>
-                      <span className="flex items-center px-3 py-1 bg-[#C8FC2C] text-black text-[10px] font-black rounded-full shadow-lg">
+                      <span className="flex items-center px-3 py-1 bg-[#C8FC2C] text-black text-[9px] font-black rounded-full shadow-lg">
                         <Star size={10} className="mr-1 fill-current" /> {selectedRestaurant.rating}
                       </span>
                     </div>
+
                     <button 
                       onClick={() => goToNext(selectedRestaurant.id)}
-                      className="px-4 py-2 bg-white text-[#2E59FB] text-xs font-black rounded-full shadow-lg hover:bg-[#EEFC2C] hover:text-black transition-all"
+                      className="flex items-center gap-1.5 px-3 py-2 bg-[#C8FC2C] text-black text-[10px] font-black rounded-full shadow-lg hover:bg-[#EEFC2C] transition-all"
                     >
-                      NEXT!
+                      NEXT <ChevronLeft size={14} className="rotate-180" />
                     </button>
                   </div>
                   
-                  <div className="flex items-center gap-4 group">
-                    <button 
-                      onClick={handleBack}
-                      className="p-1 opacity-40 hover:opacity-100 transition-opacity"
-                      title="Back to list"
-                    >
-                      <ChevronLeft size={24} />
-                    </button>
-                    <h2 className="text-4xl font-black tracking-tightest leading-tight uppercase italic flex-1">
+                  <div className="flex flex-col gap-2">
+                    <h2 className="text-3xl font-black tracking-tightest leading-tight uppercase italic text-center">
                       {selectedRestaurant.name}
                     </h2>
                   </div>
                 </div>
 
-                <div className="p-8 space-y-8 -mt-6">
-                  {/* Image Gallery */}
-                  <div className="grid grid-cols-2 gap-3">
-                    {selectedRestaurant.gallery.map((img, idx) => (
-                      <div key={idx} className="aspect-square rounded-2xl overflow-hidden shadow-md border border-gray-100">
-                        <img src={img} alt={`${selectedRestaurant.name} dish`} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                <div className="p-8 space-y-6 -mt-6">
+                  {/* Logistics Section - Moved Up for better usability */}
+                  <div className="bg-white rounded-[32px] p-6 shadow-[0_20px_60px_-15px_rgba(46,89,251,0.12)] space-y-5 border border-gray-50">
+                    <div className="flex items-start gap-4">
+                      <div className="p-2.5 bg-[#2E59FB]/10 rounded-xl text-[#2E59FB]">
+                        <Clock size={18} />
                       </div>
-                    ))}
-                    {/* Fill remaining slots to reach 4 if needed */}
-                    {[...Array(Math.max(0, 4 - selectedRestaurant.gallery.length))].map((_, i) => (
-                      <div key={`placeholder-${i}`} className="aspect-square rounded-2xl overflow-hidden bg-gray-100 animate-pulse flex items-center justify-center">
-                         <Utensils size={24} className="text-gray-200" />
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="bg-white rounded-[40px] p-8 shadow-[0_20px_60px_-15px_rgba(46,89,251,0.15)] space-y-8 border border-gray-50">
-                    <h3 className="text-[11px] font-black text-gray-300 uppercase tracking-[0.3em] mb-4">Logistics</h3>
-                    
-                    <div className="flex items-start gap-6">
-                      <div className="p-3 bg-[#2E59FB]/10 rounded-2xl text-[#2E59FB]">
-                        <Clock size={20} />
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-400 font-bold uppercase mb-1">Hours</p>
+                      <div className="flex-1">
+                        <p className="text-[10px] text-gray-400 font-bold uppercase mb-0.5 tracking-wider">Opening Hours</p>
                         <p className="text-sm text-[#0E2433] leading-relaxed font-black">{selectedRestaurant.hours}</p>
                       </div>
                     </div>
                     
-                    <div className="flex items-start gap-6">
-                      <div className="p-3 bg-[#2E59FB]/10 rounded-2xl text-[#2E59FB]">
-                        <Utensils size={20} />
+                    <div className="flex items-start gap-4">
+                      <div className="p-2.5 bg-[#2E59FB]/10 rounded-xl text-[#2E59FB]">
+                        <Utensils size={18} />
                       </div>
-                      <div>
-                        <p className="text-xs text-gray-400 font-bold uppercase mb-1">Pricing & Drinks</p>
-                        <p className="text-sm text-[#0E2433] leading-relaxed font-black mb-1">{selectedRestaurant.price}</p>
-                        <p className="text-[#2E59FB] text-[11px] font-bold">{selectedRestaurant.drinks}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-6">
-                      <div className="p-3 bg-black/5 rounded-2xl text-black">
-                        <Navigation size={20} />
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-400 font-bold uppercase mb-1">Taxi Range (Uber/Freenow)</p>
-                        <p className="text-sm text-[#0E2433] leading-relaxed font-black">{selectedRestaurant.taxiRank}</p>
-                        <p className="text-gray-400 text-[10px] uppercase font-bold mt-0.5">FROM LEONARDO ROYAL</p>
+                      <div className="flex-1">
+                        <p className="text-[10px] text-gray-400 font-bold uppercase mb-0.5 tracking-wider">Pricing & Drinks</p>
+                        <p className="text-sm text-[#0E2433] leading-relaxed font-black">{selectedRestaurant.price} • <span className="text-[#2E59FB]">{selectedRestaurant.drinks}</span></p>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-6">
-                      <div className="p-3 bg-[#2E59FB]/10 rounded-2xl text-[#2E59FB]">
-                        <MapPin size={20} />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-black/5 rounded-xl text-black shrink-0">
+                          <Navigation size={16} />
+                        </div>
+                        <div>
+                          <p className="text-[9px] text-gray-400 font-bold uppercase mb-0.5 tracking-wider">Taxi Range</p>
+                          <p className="text-[11px] text-[#0E2433] font-black">{selectedRestaurant.taxiRank}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-xs text-gray-400 font-bold uppercase mb-1">Location</p>
-                        <p className="text-sm text-[#0E2433] leading-relaxed font-black">{selectedRestaurant.travel}</p>
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-[#2E59FB]/10 rounded-xl text-[#2E59FB] shrink-0">
+                          <MapPin size={16} />
+                        </div>
+                        <div>
+                          <p className="text-[9px] text-gray-400 font-bold uppercase mb-0.5 tracking-wider">Walk Travel</p>
+                          <p className="text-[11px] text-[#0E2433] font-black">{selectedRestaurant.travel}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-[#0E2433] rounded-[40px] p-8 text-white shadow-2xl relative overflow-hidden group border border-white/5">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#C8FC2C]/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-[#C8FC2C]/20 transition-all duration-500"></div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <Star size={18} className="text-[#C8FC2C] fill-[#C8FC2C]" />
-                      <h3 className="text-[11px] font-black text-[#C8FC2C] uppercase tracking-[0.3em]">Meat Highlights</h3>
+                  {/* Hero Restaurant Image */}
+                  <div className="aspect-[16/9] rounded-[32px] overflow-hidden shadow-xl border-4 border-white">
+                    <ImageWithFallback 
+                      src={selectedRestaurant.heroImage} 
+                      alt={selectedRestaurant.name} 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+
+                  {/* Meat Highlights */}
+                  <div className="bg-[#0E2433] rounded-[32px] p-6 text-white shadow-2xl relative overflow-hidden group border border-white/5">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#C8FC2C]/10 rounded-full -mr-12 -mt-12 blur-2xl group-hover:bg-[#C8FC2C]/20 transition-all duration-500"></div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <Star size={16} className="text-[#C8FC2C] fill-[#C8FC2C]" />
+                      <h3 className="text-[10px] font-black text-[#C8FC2C] uppercase tracking-[0.2em]">Chef's Meat Highlights</h3>
                     </div>
-                    <p className="text-base text-white/90 leading-relaxed font-bold italic">
+                    <p className="text-sm text-white/95 leading-relaxed font-bold italic">
                       "{selectedRestaurant.meatHighlights}"
                     </p>
                   </div>
+
+                  {/* Food Image Gallery */}
+                  <div className="space-y-4">
+                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] px-2">Signature Dishes</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {selectedRestaurant.gallery.map((img, idx) => (
+                        <div key={idx} className="aspect-square rounded-2xl overflow-hidden shadow-md border border-gray-100 bg-gray-50">
+                          <ImageWithFallback src={img} alt={`${selectedRestaurant.name} dish`} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-8 pointer-events-none flex gap-3">
+                <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-6 pointer-events-none flex gap-3 z-50">
                   <a
                     href={generateMapsUrl(selectedRestaurant.name, selectedRestaurant.isWalkable)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="pointer-events-auto flex-1 bg-[#C8FC2C] hover:bg-[#b8ea28] hover:scale-[1.02] text-black py-5 rounded-full font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-[0_15px_30px_-5px_rgba(200,252,44,0.4)]"
+                    className="pointer-events-auto flex-1 bg-[#C8FC2C] hover:bg-[#b8ea28] hover:translate-y-[-2px] text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:translate-y-[1px] shadow-[0_20px_40px_-10px_rgba(200,252,44,0.4)]"
                   >
-                    <Navigation size={22} className="fill-current" />
+                    <Navigation size={20} className="fill-current" />
                     <span>Get Directions</span>
                   </a>
                   <button 
                     onClick={() => nukeRestaurant(selectedRestaurant.id)}
-                    className="pointer-events-auto px-6 bg-red-600 hover:bg-red-700 text-white rounded-full font-black text-[10px] uppercase tracking-widest shadow-lg transition-all"
+                    className="pointer-events-auto px-5 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-black text-[9px] uppercase tracking-widest shadow-lg transition-all"
                   >
                     NUKE
                   </button>
                 </div>
               </div>
             )}
+          </div>
           </div>
         </div>
       </div>
