@@ -437,11 +437,11 @@ export default function App() {
     navigate(`/restaurant/${visibleRestaurants[prevIndex].id}`);
   };
 
-  const generateMapsUrl = (restaurantName, isWalkable, useCurrent = false) => {
+  const generateMapsUrl = (restaurantName, useCurrent = false) => {
     const origin = useCurrent ? '' : encodeURIComponent("Leonardo Royal Hotel Barcelona Fira");
     const destination = encodeURIComponent(`${restaurantName}, Barcelona, Spain`);
-    const travelMode = isWalkable ? 'walking' : 'driving';
-    return `https://www.google.com/maps/dir/?api=1${origin ? `&origin=${origin}` : ''}&destination=${destination}&travelmode=${travelMode}`;
+    // Default to walking Mode
+    return `https://www.google.com/maps/dir/?api=1${origin ? `&origin=${origin}` : ''}&destination=${destination}&travelmode=walking`;
   };
 
   return (
@@ -605,10 +605,10 @@ export default function App() {
                         {selectedRestaurant.name}
                       </h2>
                       <a 
-                        href={generateMapsUrl(selectedRestaurant.name, selectedRestaurant.isWalkable, true)}
+                        href={generateMapsUrl(selectedRestaurant.name, true)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-3 bg-[#C8FC2C] text-black rounded-full shadow-lg hover:scale-110 transition-all active:scale-95"
+                        className="p-3 bg-[#C8FC2C] text-black rounded-full shadow-lg hover:scale-110 transition-all active:scale-95 relative ripple-effect"
                         title="Get directions from my location"
                       >
                         <Navigation size={20} className="fill-current" />
@@ -645,13 +645,15 @@ export default function App() {
                         <MapPin size={18} />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Walk Travel</p>
-                          <span className="px-1.5 py-0.5 bg-[#2E59FB]/5 text-[#2E59FB] text-[8px] font-black rounded-md flex items-center gap-1">
-                            FROM HOTEL 🚶
-                          </span>
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Walking Distance</p>
                         </div>
-                        <p className="text-sm text-[#0E2433] leading-relaxed font-black">{selectedRestaurant.travel}</p>
+                        <p className="text-sm text-[#0E2433] leading-relaxed font-black">
+                          From the hotel it will take a roundabout {(() => {
+                            const minutes = parseInt(selectedRestaurant.travel.match(/\d+/)?.[0] || 0);
+                            return Math.max(1, Math.round(minutes * 0.85)); // Reduce by 15%
+                          })()} minutes 🚶
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -713,7 +715,7 @@ export default function App() {
 
                 <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-6 pointer-events-none flex gap-3 z-50">
                   <a
-                    href={generateMapsUrl(selectedRestaurant.name, selectedRestaurant.isWalkable)}
+                    href={generateMapsUrl(selectedRestaurant.name)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="pointer-events-auto flex-1 bg-[#C8FC2C] hover:bg-[#b8ea28] hover:translate-y-[-2px] text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:translate-y-[1px] shadow-[0_20px_40px_-10px_rgba(200,252,44,0.4)]"
