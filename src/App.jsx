@@ -423,11 +423,14 @@ export default function App() {
     }
   };
 
+  const [showSausageScore, setShowSausageScore] = useState(false);
+
   const goToNext = (currentId) => {
     const currentIndex = visibleRestaurants.findIndex(r => r.id === currentId);
     if (currentIndex === -1) return;
     const nextIndex = (currentIndex + 1) % visibleRestaurants.length;
     navigate(`/restaurant/${visibleRestaurants[nextIndex].id}`);
+    setShowSausageScore(false);
   };
 
   const goToPrev = (currentId) => {
@@ -435,6 +438,7 @@ export default function App() {
     if (currentIndex === -1) return;
     const prevIndex = (currentIndex - 1 + visibleRestaurants.length) % visibleRestaurants.length;
     navigate(`/restaurant/${visibleRestaurants[prevIndex].id}`);
+    setShowSausageScore(false);
   };
 
   const generateMapsUrl = (restaurantName, useCurrent = false) => {
@@ -620,13 +624,17 @@ export default function App() {
                 <div className="p-8 space-y-6 -mt-6">
                   {/* Logistics Section - Moved Up for better usability */}
                   <div className="bg-white rounded-[32px] p-6 shadow-[0_20px_60px_-15px_rgba(46,89,251,0.12)] space-y-5 border border-gray-50">
-                    <div className="flex items-start gap-4">
-                      <div className="p-2.5 bg-[#2E59FB]/10 rounded-xl text-[#2E59FB]">
-                        <Clock size={18} />
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-[#2E59FB]/10 rounded-xl text-[#2E59FB] shrink-0">
+                          <Clock size={22} />
+                        </div>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Opening Hours</p>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-[10px] text-gray-400 font-bold uppercase mb-0.5 tracking-wider">Opening Hours</p>
-                        <p className="text-sm text-[#0E2433] leading-relaxed font-black">{selectedRestaurant.hours}</p>
+                      <div className="pl-[52px]">
+                        <p className="text-base text-[#0E2433] leading-relaxed font-black bg-gray-50 p-4 rounded-2xl border border-gray-100 shadow-inner">
+                          {selectedRestaurant.hours}
+                        </p>
                       </div>
                     </div>
                     
@@ -710,22 +718,30 @@ export default function App() {
                   })()}
                 </div>
 
-                <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-6 pointer-events-none flex gap-3 z-50">
-                  <a
-                    href={generateMapsUrl(selectedRestaurant.name)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="pointer-events-auto flex-1 bg-[#C8FC2C] hover:bg-[#b8ea28] hover:translate-y-[-2px] text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:translate-y-[1px] shadow-[0_20px_40px_-10px_rgba(200,252,44,0.4)]"
-                  >
-                    <Navigation size={20} className="fill-current" />
-                    <span>Get Directions</span>
-                  </a>
-                  <button 
-                    onClick={() => nukeRestaurant(selectedRestaurant.id)}
-                    className="pointer-events-auto px-5 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-black text-[9px] uppercase tracking-widest shadow-lg transition-all"
-                  >
-                    NUKE
-                  </button>
+                <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-6 pointer-events-none flex flex-col gap-3 z-50">
+                  <div className="flex gap-3">
+                    <a
+                      href={generateMapsUrl(selectedRestaurant.name)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="pointer-events-auto flex-1 bg-[#C8FC2C] hover:bg-[#b8ea28] hover:translate-y-[-2px] text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:translate-y-[1px] shadow-[0_20px_40px_-10px_rgba(200,252,44,0.4)]"
+                    >
+                      <Navigation size={20} className="fill-current" />
+                      <span>Get Directions</span>
+                    </a>
+                    <button 
+                      onClick={() => setShowSausageScore(true)}
+                      className="pointer-events-auto px-6 bg-[#2E59FB] hover:bg-[#1a44e5] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg transition-all active:scale-95 whitespace-nowrap"
+                    >
+                      I REALLY LIKE SAUSAGE
+                    </button>
+                  </div>
+                  {showSausageScore && (
+                    <div className="pointer-events-auto bg-[#0E2433] text-[#C8FC2C] text-[10px] font-black uppercase tracking-widest p-3 rounded-xl text-center shadow-2xl border border-[#C8FC2C]/20 animate-bounce">
+                      Currently, Richie has the high score! 👑
+                    </div>
+                  )}
+                  <div className="h-4"></div> {/* Safety space at the bottom */}
                 </div>
               </div>
             )}
