@@ -72,7 +72,7 @@ const images = {
   ],
   purabrasa: [
     macheteImg,
-    'https://www.purabrasa.com/wp-content/uploads/2021/01/pulpo-purabrasa.png',
+    'https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800&h=800&fit=crop',
     'https://www.purabrasa.com/wp-content/uploads/2021/01/canelon-purabrasa.png',
     burgerImg
   ],
@@ -84,7 +84,7 @@ const images = {
   ],
   canota: [
     'https://media-cdn.tripadvisor.com/media/photo-s/13/b8/b2/8d/puerco.jpg',
-    tapasImg,
+    'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800&h=800&fit=crop',
     burgerImg,
     'https://media-cdn.tripadvisor.com/media/photo-s/0d/16/c5/d2/un-plaer-per-al-paladar.jpg'
   ],
@@ -96,7 +96,7 @@ const images = {
   ],
   tramuntana: [
     fishImg,
-    'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2c/2e/ab/b6/restaurant.jpg?w=1100&h=1100&s=1',
+    'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&h=800&fit=crop',
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2c/2e/ab/ad/breakfast.jpg?w=1100&h=1100&s=1',
     macheteImg
   ]
