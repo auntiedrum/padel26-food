@@ -577,7 +577,7 @@ export default function App() {
         <div className="bg-[#0E2433]/90 backdrop-blur-md px-6 py-2.5 flex items-center justify-between sticky top-0 z-50 border-b border-white/5">
           <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Padel tour 26</span>
           <a 
-            href="https://padel26.netlify.app/"
+            href="https://pad26.netlify.app/"
             className="text-[10px] font-black text-[#C8FC2C] uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <span>Main Itinerary</span>
