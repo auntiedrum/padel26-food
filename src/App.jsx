@@ -645,14 +645,11 @@ export default function App() {
                         <MapPin size={18} />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Walking Distance</p>
-                        </div>
                         <p className="text-sm text-[#0E2433] leading-relaxed font-black">
-                          From the hotel it will take a roundabout {(() => {
+                          It will take about {(() => {
                             const minutes = parseInt(selectedRestaurant.travel.match(/\d+/)?.[0] || 0);
                             return Math.max(1, Math.round(minutes * 0.85)); // Reduce by 15%
-                          })()} minutes 🚶
+                          })()} minutes from the hotel 🚶
                         </p>
                       </div>
                     </div>
