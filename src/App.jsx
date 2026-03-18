@@ -50,16 +50,16 @@ const images = {
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/30/80/7e/kobuta-ramen-i-mes.jpg?w=1100&h=1100&s=1'
   ],
   mamma: [
-    'https://www.mammamiapoblenou.com/img-trans/productos/23079/fotos/1024-65e8a9e5b7cee-mammamia.png',
-    'https://www.mammamiapoblenou.com/img-trans/productos/23079/fotos/1024-65e8a8c91edfd-mammamia.png',
-    'https://www.mammamiapoblenou.com/img-trans/productos/23079/fotos/1024-65e8a96209493-mammamia.png',
-    'https://b.zmtcdn.com/data/pictures/8/16723228/626507310065073e5f5c8a9e6b7c5e9a.jpg'
+    'https://www.pizzeriamammaitalia.com/img-trans/productos/23079/fotos/1024-65e8a9e5b7cee-mammamia.png',
+    'https://www.pizzeriamammaitalia.com/img-trans/productos/23079/fotos/1024-65e8a8c91edfd-mammamia.png',
+    'https://www.pizzeriamammaitalia.com/img-trans/productos/23079/fotos/1024-65e8a96209493-mammamia.png',
+    'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1a/0b/22/0c/pizza.jpg?w=800&h=-1&s=1'
   ],
   purabrasa: [
-    'https://www.purabrasa.com/wp-content/uploads/2021/01/chuleton-purabrasa-600x353.png',
-    'https://www.purabrasa.com/wp-content/uploads/2024/04/Costillar-600x353.png',
-    'https://www.purabrasa.com/wp-content/uploads/2024/04/burger-wagyu-600x353.png',
-    'https://www.purabrasa.com/wp-content/uploads/2021/01/coctails-600x353.png'
+    'https://www.purabrasa.com/wp-content/uploads/2021/01/machete-purabrasa.png',
+    'https://www.purabrasa.com/wp-content/uploads/2021/01/pulpo-purabrasa.png',
+    'https://www.purabrasa.com/wp-content/uploads/2021/01/canelon-purabrasa.png',
+    'https://www.purabrasa.com/wp-content/uploads/2021/01/steak-tartar-purabrasa.png'
   ],
   filigrana: [
     'https://media-cdn.tripadvisor.com/media/photo-s/0e/6a/f1/b7/photo0jpg.jpg',
@@ -96,7 +96,7 @@ const restaurants = [
     flag: "🇪🇸",
     rating: "4.4",
     price: "£27 - £47",
-    taxiRank: "€8 - €12",
+
     drinks: "Premium wine, local beer, cocktails",
     travel: "8-min walk",
     isWalkable: true,
@@ -347,15 +347,11 @@ function MapView({ onSelect, restaurants: places }) {
                   
                   <div className="space-y-1 py-1 border-t border-gray-100 mt-1">
                     <div className="flex items-center gap-2 text-[11px] text-gray-500">
-                      <Clock size={12} className="text-[#2E59FB]" />
-                      <span className="font-semibold">{place.travel.split('(')[0]} ({walkTime}m)</span>
-                    </div>
-                    {showTaxiInGbp && gbpTaxi && (
-                      <div className="flex items-center gap-2 text-[11px] text-[#2E59FB] font-bold">
-                        <Navigation size={12} />
-                        <span>Taxi: Approx {gbpTaxi}</span>
+                      <div className="flex items-center gap-1.5 px-1.5 py-0.5 bg-[#2E59FB]/5 text-[#2E59FB] text-[8px] font-black rounded-md">
+                        FROM HOTEL 🚶
                       </div>
-                    )}
+                      <span className="font-semibold text-[10px]">{place.travel.split('(')[0]} ({walkTime}m)</span>
+                    </div>
                   </div>
 
                   <button 
@@ -441,11 +437,11 @@ export default function App() {
     navigate(`/restaurant/${visibleRestaurants[prevIndex].id}`);
   };
 
-  const generateMapsUrl = (restaurantName, isWalkable) => {
-    const origin = encodeURIComponent("Leonardo Royal Hotel Barcelona Fira");
+  const generateMapsUrl = (restaurantName, isWalkable, useCurrent = false) => {
+    const origin = useCurrent ? '' : encodeURIComponent("Leonardo Royal Hotel Barcelona Fira");
     const destination = encodeURIComponent(`${restaurantName}, Barcelona, Spain`);
     const travelMode = isWalkable ? 'walking' : 'driving';
-    return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=${travelMode}`;
+    return `https://www.google.com/maps/dir/?api=1${origin ? `&origin=${origin}` : ''}&destination=${destination}&travelmode=${travelMode}`;
   };
 
   return (
@@ -531,9 +527,11 @@ export default function App() {
                           <Clock size={14} className="text-[#2E59FB]" />
                           <span>{place.hours.split('&')[0].trim()}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400">
-                          <MapPin size={14} className="text-[#2E59FB]" />
-                          <span>{place.travel.split('(')[0].trim()}</span>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5 px-1.5 py-0.5 bg-[#2E59FB]/5 text-[#2E59FB] text-[8px] font-black rounded-md">
+                            FROM HOTEL 🚶
+                          </div>
+                          <span className="text-[11px] font-bold text-gray-400">{place.travel.split('(')[0].trim()}</span>
                         </div>
                       </div>
                       <div className="bg-[#2E59FB]/5 p-2 rounded-full text-[#2E59FB] group-hover:bg-[#2E59FB] group-hover:text-white transition-all">
@@ -601,10 +599,21 @@ export default function App() {
                     </div>
                   </div>
                   
-                  <div className="flex flex-col gap-2">
-                    <h2 className="text-3xl font-black tracking-tightest leading-tight uppercase italic text-center">
-                      {selectedRestaurant.name}
-                    </h2>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center justify-center gap-4">
+                      <h2 className="text-3xl font-black tracking-tightest leading-tight uppercase italic text-center">
+                        {selectedRestaurant.name}
+                      </h2>
+                      <a 
+                        href={generateMapsUrl(selectedRestaurant.name, selectedRestaurant.isWalkable, true)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-3 bg-[#C8FC2C] text-black rounded-full shadow-lg hover:scale-110 transition-all active:scale-95"
+                        title="Get directions from my location"
+                      >
+                        <Navigation size={20} className="fill-current" />
+                      </a>
+                    </div>
                   </div>
                 </div>
 
@@ -631,24 +640,18 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 bg-black/5 rounded-xl text-black shrink-0">
-                          <Navigation size={16} />
-                        </div>
-                        <div>
-                          <p className="text-[9px] text-gray-400 font-bold uppercase mb-0.5 tracking-wider">Taxi Range</p>
-                          <p className="text-[11px] text-[#0E2433] font-black">{selectedRestaurant.taxiRank}</p>
-                        </div>
+                    <div className="flex items-start gap-4">
+                      <div className="p-2.5 bg-[#2E59FB]/10 rounded-xl text-[#2E59FB]">
+                        <MapPin size={18} />
                       </div>
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 bg-[#2E59FB]/10 rounded-xl text-[#2E59FB] shrink-0">
-                          <MapPin size={16} />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Walk Travel</p>
+                          <span className="px-1.5 py-0.5 bg-[#2E59FB]/5 text-[#2E59FB] text-[8px] font-black rounded-md flex items-center gap-1">
+                            FROM HOTEL 🚶
+                          </span>
                         </div>
-                        <div>
-                          <p className="text-[9px] text-gray-400 font-bold uppercase mb-0.5 tracking-wider">Walk Travel</p>
-                          <p className="text-[11px] text-[#0E2433] font-black">{selectedRestaurant.travel}</p>
-                        </div>
+                        <p className="text-sm text-[#0E2433] leading-relaxed font-black">{selectedRestaurant.travel}</p>
                       </div>
                     </div>
                   </div>
@@ -675,16 +678,37 @@ export default function App() {
                   </div>
 
                   {/* Food Image Gallery */}
-                  <div className="space-y-4">
-                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] px-2">Signature Dishes</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      {selectedRestaurant.gallery.map((img, idx) => (
-                        <div key={idx} className="aspect-square rounded-2xl overflow-hidden shadow-md border border-gray-100 bg-gray-50">
-                          <ImageWithFallback src={img} alt={`${selectedRestaurant.name} dish`} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  {(() => {
+                    const uniqueGalleryImages = Array.from(new Set(selectedRestaurant.gallery));
+                    const hasSingleUnique = uniqueGalleryImages.length === 1;
+
+                    return (
+                      <div className="space-y-4">
+                        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] px-2">Signature Dishes</h3>
+                        {hasSingleUnique ? (
+                          <div className="aspect-[16/9] rounded-3xl overflow-hidden shadow-xl border-2 border-gray-50 bg-gray-50">
+                            <ImageWithFallback 
+                              src={uniqueGalleryImages[0]} 
+                              alt={`${selectedRestaurant.name} dish`} 
+                              className="w-full h-full object-cover" 
+                            />
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-2 gap-3">
+                            {uniqueGalleryImages.map((img, idx) => (
+                              <div key={idx} className="aspect-square rounded-2xl overflow-hidden shadow-md border border-gray-100 bg-gray-50">
+                                <ImageWithFallback 
+                                  src={img} 
+                                  alt={`${selectedRestaurant.name} dish`} 
+                                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" 
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-6 pointer-events-none flex gap-3 z-50">
