@@ -578,8 +578,6 @@ export default function App() {
           <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Padel tour 26</span>
           <a 
             href="https://padel26.netlify.app/"
-            target="_blank"
-            rel="noopener noreferrer"
             className="text-[10px] font-black text-[#C8FC2C] uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <span>Main Itinerary</span>
@@ -588,7 +586,7 @@ export default function App() {
         </div>
 
         {/* Playtomic Style Header */}
-        <header className="bg-[#2E59FB] px-8 pt-8 pb-6 flex flex-col gap-6 sticky top-0 z-30">
+        <header className={`bg-[#2E59FB] px-8 flex flex-col sticky top-[41px] z-30 transition-all duration-300 ${activeView === 'detail' ? 'pt-2 pb-2 gap-1 shadow-lg' : 'pt-8 pb-6 gap-6'}`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 text-white">
               {activeView === 'detail' && (
@@ -700,8 +698,8 @@ export default function App() {
           >
             {selectedRestaurant && (
               <div className="pb-32 min-h-full flex flex-col">
-                <div className="p-8 pb-10 bg-[#2E59FB] text-white rounded-b-[48px] shadow-xl relative">
-                  <div className="flex flex-col gap-6 mb-4">
+                <div className="p-6 pb-8 bg-[#2E59FB] text-white rounded-b-[48px] shadow-xl relative -mt-1">
+                  <div className="flex flex-col gap-4 mb-4">
                     <div className="flex justify-center mt-2">
                        <span className="text-xl sm:text-2xl font-black text-[#FF00FF] uppercase tracking-[0.2em] crazy-flicker bg-black/20 px-6 py-3 rounded-3xl border border-[#FF00FF]/30 backdrop-blur-sm flex items-center gap-2">
                          <span className="text-3xl">{selectedRestaurant.flag}</span>
@@ -778,7 +776,7 @@ export default function App() {
                         <Utensils size={18} />
                       </div>
                       <div className="flex-1">
-                        <p className="text-[10px] text-gray-400 font-bold uppercase mb-0.5 tracking-wider">Pricing & Drinks</p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase mb-0.5 tracking-wider">Price range for full meal & drinks</p>
                         <p className="text-sm text-[#0E2433] leading-relaxed font-black">{selectedRestaurant.price} • <span className="text-[#2E59FB]">{selectedRestaurant.drinks}</span></p>
                       </div>
                     </div>
@@ -860,33 +858,33 @@ export default function App() {
                   })()}
                 </div>
 
-                <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-6 pointer-events-none flex flex-col gap-3 z-50">
-                  <div className="flex gap-3">
+                <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-3 pointer-events-none flex flex-col gap-2 z-50 bg-gradient-to-t from-[#F5F7FF] via-[#F5F7FF]/90 to-transparent">
+                  <div className="flex gap-2">
                     <a
                       href={generateMapsUrl(selectedRestaurant.name)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="pointer-events-auto flex-1 bg-[#C8FC2C] hover:bg-[#b8ea28] hover:translate-y-[-2px] text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:translate-y-[1px] shadow-[0_20px_40px_-10px_rgba(200,252,44,0.4)]"
+                      className="pointer-events-auto flex-1 bg-[#C8FC2C] hover:bg-[#b8ea28] text-black py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md"
                     >
-                      <Navigation size={20} className="fill-current" />
-                      <span>Get Directions</span>
+                      <Navigation size={14} className="fill-current" />
+                      <span>Directions</span>
                     </a>
                     <button 
                       onClick={handleSausageClick}
-                      className="pointer-events-auto px-6 bg-[#2E59FB] hover:bg-[#1a44e5] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg transition-all active:scale-95 whitespace-nowrap"
+                      className="pointer-events-auto px-4 bg-[#2E59FB] hover:bg-[#1a44e5] text-white rounded-xl font-black text-[9px] uppercase tracking-widest shadow-md transition-all active:scale-95 whitespace-nowrap"
                     >
-                      I REALLY LIKE SAUSAGE
+                      SAUSAGE?
                     </button>
                   </div>
                   {showSausageScore && (
                     <div 
                       onClick={handleSausageClick}
-                      className="pointer-events-auto bg-[#0E2433] text-[#C8FC2C] text-[10px] font-black uppercase tracking-widest p-3 rounded-xl text-center shadow-2xl border border-[#C8FC2C]/20 animate-bounce cursor-pointer hover:bg-black/80 transition-colors"
+                      className="pointer-events-auto bg-[#0E2433] text-[#C8FC2C] text-[9px] font-black uppercase tracking-widest py-1.5 px-3 rounded-lg text-center shadow-2xl border border-[#C8FC2C]/20 animate-bounce cursor-pointer hover:bg-black/80 transition-colors"
                     >
-                      Currently, {sausageState.currentWinner} has the high score! {sausageState.isSettled ? '🏆' : '👑'}
+                      Richie high score! {sausageState.isSettled ? '🏆' : '👑'}
                     </div>
                   )}
-                  <div className="h-4 sm:hidden"></div> {/* Extra safety space for mobile browsers */}
+                  <div className="h-1 sm:hidden"></div>
                 </div>
               </div>
             )}
