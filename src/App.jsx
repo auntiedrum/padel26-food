@@ -5,14 +5,29 @@ import L from 'leaflet';
 import { useNavigate, useLocation, Routes, Route } from 'react-router-dom';
 import kobutaFront from './assets/restaurants/kobuta_front.png';
 import palmerFront from './assets/restaurants/palmer_front.png';
-import backupFront from './assets/restaurants/backup_front.png';
+import backupFront from './assets/restaurants/premium_exterior.png';
+
+// Import New High-Quality Food Assets
+import macheteImg from './assets/food/machete.png';
+import ramenImg from './assets/food/ramen.png';
+import pizzaImg from './assets/food/pizza.png';
+import tapasImg from './assets/food/tapas.png';
+import fishImg from './assets/food/fish.png';
+import argSteakImg from './assets/food/arg_steak.png';
+import burgerImg from './assets/food/burger.png';
+
+const foodDefaults = [macheteImg, ramenImg, pizzaImg, tapasImg, fishImg, argSteakImg, burgerImg];
 
 const ImageWithFallback = ({ src, alt, className, fallback = backupFront }) => {
   const [imgSrc, setImgSrc] = useState(src);
 
+  useEffect(() => {
+    setImgSrc(src);
+  }, [src]);
+
   return (
     <img
-      src={imgSrc}
+      src={imgSrc || fallback}
       alt={alt}
       className={className}
       onError={() => {
@@ -27,63 +42,63 @@ const ImageWithFallback = ({ src, alt, className, fallback = backupFront }) => {
 const images = {
   palmer: [
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/15/d2/68/2a/buena-carne.jpg?w=800&h=-1&s=1',
-    'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/8d/1e/49/entrana-skirt-steak.jpg?w=800&h=-1&s=1',
-    'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2e/e3/2a/25/in-out.jpg?w=800&h=-1&s=1',
+    macheteImg,
+    fishImg,
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/ab/ad/0c/caption.jpg?w=800&h=-1&s=1'
   ],
   atlantida: [
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2b/c7/c0/44/caption.jpg?w=1100&h=1100&s=1',
-    'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/be/f6/50/caption.jpg?w=1100&h=1100&s=1',
-    'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/be/f6/51/caption.jpg?w=1100&h=1100&s=1',
+    argSteakImg,
+    tapasImg,
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/18/a6/70/ae/img-20190805-202233-largejpg.jpg?w=800&h=800&s=1'
   ],
   farolito: [
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2e/82/ff/53/caption.jpg?w=1100&h=1100&s=1',
-    'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/bc/b4/0b/caption.jpg?w=1100&h=1100&s=1',
+    argSteakImg,
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1a/af/fc/6e/asado-de-tira.jpg?w=1100&h=1100&s=1',
-    'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2e/46/00/56/caption.jpg?w=1100&h=1100&s=1'
+    tapasImg
   ],
   kobuta: [
-    'https://images.squarespace-cdn.com/content/v1/56c24386746fb92170364c67/1519315570220-NMK0D13L0H0L0H0L0H0L/image-asset.jpeg',
+    ramenImg,
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/30/80/7d/karaage.jpg?w=1100&h=1100&s=1',
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/30/80/7c/gyozas.jpg?w=1100&h=1100&s=1',
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/30/80/7e/kobuta-ramen-i-mes.jpg?w=1100&h=1100&s=1'
   ],
   mamma: [
-    'https://www.pizzeriamammaitalia.com/img-trans/productos/23079/fotos/1024-65e8a9e5b7cee-mammamia.png',
+    pizzaImg,
     'https://www.pizzeriamammaitalia.com/img-trans/productos/23079/fotos/1024-65e8a8c91edfd-mammamia.png',
     'https://www.pizzeriamammaitalia.com/img-trans/productos/23079/fotos/1024-65e8a96209493-mammamia.png',
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1a/0b/22/0c/pizza.jpg?w=800&h=-1&s=1'
   ],
   purabrasa: [
-    'https://www.purabrasa.com/wp-content/uploads/2021/01/machete-purabrasa.png',
+    macheteImg,
     'https://www.purabrasa.com/wp-content/uploads/2021/01/pulpo-purabrasa.png',
     'https://www.purabrasa.com/wp-content/uploads/2021/01/canelon-purabrasa.png',
-    'https://www.purabrasa.com/wp-content/uploads/2021/01/steak-tartar-purabrasa.png'
+    burgerImg
   ],
   filigrana: [
     'https://media-cdn.tripadvisor.com/media/photo-s/0e/6a/f1/b7/photo0jpg.jpg',
-    'https://media-cdn.tripadvisor.com/media/photo-s/11/49/7f/41/dsc-0010-largejpg.jpg',
+    fishImg,
     'https://media-cdn.tripadvisor.com/media/photo-s/13/2b/43/d8/solomillo-al-whisky.jpg',
-    'https://media-cdn.tripadvisor.com/media/photo-s/11/2c/31/3b/pouring-wine.jpg'
+    tapasImg
   ],
   canota: [
     'https://media-cdn.tripadvisor.com/media/photo-s/13/b8/b2/8d/puerco.jpg',
-    'https://media-cdn.tripadvisor.com/media/photo-s/0f/f2/a9/ff/albondigas-con-sepia.jpg',
-    'https://media-cdn.tripadvisor.com/media/photo-s/0a/8a/7e/6a/hamburguesitas.jpg',
+    tapasImg,
+    burgerImg,
     'https://media-cdn.tripadvisor.com/media/photo-s/0d/16/c5/d2/un-plaer-per-al-paladar.jpg'
   ],
   mondore: [
-    'https://media-cdn.tripadvisor.com/media/photo-s/0d/95/8e/3c/mondore.jpg',
-    'https://media-cdn.tripadvisor.com/media/photo-s/0a/73/0c/33/tastet-de-miniburgers.jpg',
+    tapasImg,
+    burgerImg,
     'https://media-cdn.tripadvisor.com/media/photo-s/0c/fc/1d/1d/solomillo-de-cerdo-con.jpg',
     'https://media-cdn.tripadvisor.com/media/photo-s/0c/fc/1d/2c/degustacion-de-cervezas.jpg'
   ],
   tramuntana: [
-    'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2c/2e/ab/b3/restaurant.jpg?w=1100&h=1100&s=1',
+    fishImg,
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2c/2e/ab/b6/restaurant.jpg?w=1100&h=1100&s=1',
     'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2c/2e/ab/ad/breakfast.jpg?w=1100&h=1100&s=1',
-    'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2c/2e/ab/bd/bar.jpg?w=1100&h=1100&s=1'
+    macheteImg
   ]
 };
 
@@ -791,35 +806,41 @@ export default function App() {
                     </p>
                   </div>
 
-                  {/* Food Image Gallery */}
+                  {/* Food Image Gallery - Optimized for uniqueness */}
                   {(() => {
+                    // Force uniqueness and ensure we have 4 images
                     const uniqueGalleryImages = Array.from(new Set(selectedRestaurant.gallery));
-                    const hasSingleUnique = uniqueGalleryImages.length === 1;
+                    
+                    // If we have fewer than 4 unique, pad with high-quality defaults but exclude ones already present
+                    let finalImages = [...uniqueGalleryImages];
+                    if (finalImages.length < 4) {
+                      const fillers = foodDefaults.filter(img => !finalImages.includes(img));
+                      finalImages = [...finalImages, ...fillers].slice(0, 4);
+                    }
 
                     return (
                       <div className="space-y-4">
-                        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] px-2">Signature Dishes</h3>
-                        {hasSingleUnique ? (
-                          <div className="aspect-[16/9] rounded-3xl overflow-hidden shadow-xl border-2 border-gray-50 bg-gray-50">
-                            <ImageWithFallback 
-                              src={uniqueGalleryImages[0]} 
-                              alt={`${selectedRestaurant.name} dish`} 
-                              className="w-full h-full object-cover" 
-                            />
+                        <div className="flex items-center justify-between px-2">
+                          <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Signature Dishes</h3>
+                          <div className="flex gap-1">
+                             <div className="w-1.5 h-1.5 rounded-full bg-[#C8FC2C]"></div>
+                             <div className="w-1.5 h-1.5 rounded-full bg-[#C8FC2C]/40"></div>
+                             <div className="w-1.5 h-1.5 rounded-full bg-[#C8FC2C]/20"></div>
                           </div>
-                        ) : (
-                          <div className="grid grid-cols-2 gap-3">
-                            {uniqueGalleryImages.map((img, idx) => (
-                              <div key={idx} className="aspect-square rounded-2xl overflow-hidden shadow-md border border-gray-100 bg-gray-50">
-                                <ImageWithFallback 
-                                  src={img} 
-                                  alt={`${selectedRestaurant.name} dish`} 
-                                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" 
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 pb-8">
+                          {finalImages.map((img, idx) => (
+                            <div key={idx} className="aspect-square rounded-[24px] overflow-hidden shadow-lg border-2 border-white bg-gray-100 group">
+                              <ImageWithFallback 
+                                src={img} 
+                                alt={`${selectedRestaurant.name} dish`} 
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                              />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     );
                   })()}
