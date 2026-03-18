@@ -271,6 +271,78 @@ const restaurants = [
   }
 ];
 
+const SquadLeaderboard = () => {
+  const [leaderboard, setLeaderboard] = useState([]);
+  
+  useEffect(() => {
+    const names = ['Trevor', 'Paul', 'Steve', 'Ian'];
+    // Shuffle names
+    const shuffled = names.sort(() => 0.5 - Math.random());
+    
+    // Determine Pete's position (0 or 1)
+    const petePos = Math.random() > 0.5 ? 0 : 1;
+    const finalOrder = [...shuffled];
+    finalOrder.splice(petePos, 0, 'Pete');
+    
+    // Scores from 4.3 to 0.8
+    const scores = [4.3, 3.8, 2.9, 1.4, 0.8];
+    
+    const colors = [
+      'bg-[#FF4D4D]', // Red
+      'bg-[#FF9F43]', // Orange
+      'bg-[#F9CA24]', // Yellow
+      'bg-[#2ECC71]', // Green
+      'bg-[#3498DB]', // Blue
+    ];
+
+    setLeaderboard(finalOrder.slice(0, 5).map((name, i) => ({
+      name,
+      score: scores[i],
+      color: colors[i],
+      isFirst: i === 0
+    })));
+  }, []);
+
+  return (
+    <div className="bg-white rounded-[40px] p-8 shadow-2xl border border-gray-100 overflow-hidden mt-8">
+      <div className="flex flex-col items-center mb-8">
+        <h3 className="text-[11px] font-black text-[#2E59FB] uppercase tracking-[0.4em] mb-2">Squad Leaderboard</h3>
+        <div className="h-1 w-12 bg-[#2E59FB] rounded-full opacity-20"></div>
+      </div>
+      
+      <div className="space-y-3">
+        {leaderboard.map((player, idx) => (
+          <div 
+            key={player.name}
+            className={`${player.color} text-white p-4 rounded-3xl flex items-center justify-between shadow-xl ring-4 ring-white transition-all transform hover:translate-x-1`}
+          >
+            <div className="flex items-center gap-4">
+              <span className="font-black italic text-xl opacity-40">#{idx + 1}</span>
+              <span className="font-black uppercase tracking-tightest text-sm flex items-center gap-3">
+                {player.name}
+                {player.isFirst && player.name !== 'Pete' && (
+                  <span className="flex items-center gap-1 animate-pulse">
+                    <span className="text-xl">🌺</span>
+                    <span className="text-xl">🌸</span>
+                    <span className="text-xl">💅</span>
+                  </span>
+                )}
+                {player.name === 'Pete' && <span className="text-xl">🐐</span>}
+              </span>
+            </div>
+            <div className="font-black bg-black/30 backdrop-blur-md px-4 py-1.5 rounded-2xl text-[13px] border border-white/20">
+              {player.score.toFixed(1)}
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="text-center text-[9px] font-bold text-gray-300 uppercase tracking-widest mt-8 italic">
+        Scores updated live via SAT-LINK 📡
+      </p>
+    </div>
+  );
+};
+
 const HOTEL_LOCATION = { lat: 41.3582, lng: 2.1345, name: "Leonardo Royal Hotel" };
 
 const createCustomIcon = (rating = null, isHotel = false, flag = "") => {
@@ -376,13 +448,58 @@ export default function App() {
   const location = useLocation();
   const [activeView, setActiveView] = useState('list');
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
-  const [nukedIds, setNukedIds] = useState(() => {
+  const [nukedIds] = useState([]); 
+  const [showSausageScore, setShowSausageScore] = useState(false);
+  const [sausageState, setSausageState] = useState(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('nukedRestaurants');
-      return saved ? JSON.parse(saved) : [];
+      const saved = localStorage.getItem('sausageData');
+      return saved ? JSON.parse(saved) : {
+        currentWinner: 'Richie',
+        clickCount: 0,
+        isSettled: false,
+        userName: null
+      };
     }
-    return [];
+    return { currentWinner: 'Richie', clickCount: 0, isSettled: false, userName: null };
   });
+
+  const handleSausageClick = () => {
+    if (sausageState.isSettled) {
+      setShowSausageScore(true);
+      return;
+    }
+
+    if (!showSausageScore) {
+      setShowSausageScore(true);
+      return;
+    }
+
+    const others = ['Trevor', 'Paul', 'Steve', 'Ian'];
+    let newWinner = others[Math.floor(Math.random() * others.length)];
+    const newCount = sausageState.clickCount + 1;
+
+    if (newCount >= 3) {
+      const name = prompt("Wait, before we finalize the high score... what is your name?");
+      if (name) {
+        const finalWinner = others[Math.floor(Math.random() * others.length)];
+        const newState = {
+          currentWinner: finalWinner,
+          clickCount: newCount,
+          isSettled: true,
+          userName: name
+        };
+        setSausageState(newState);
+        localStorage.setItem('sausageData', JSON.stringify(newState));
+        alert(`Thanks ${name}! The global high score has been locked in.`);
+      }
+    } else {
+      setSausageState(prev => ({
+        ...prev,
+        currentWinner: newWinner,
+        clickCount: newCount
+      }));
+    }
+  };
 
   const visibleRestaurants = restaurants.filter(r => !nukedIds.includes(r.id));
 
@@ -413,17 +530,6 @@ export default function App() {
   const handleBack = () => {
     navigate('/');
   };
-
-  const nukeRestaurant = (id) => {
-    if (typeof window !== 'undefined' && confirm('Nuke this place? You will never see it again.')) {
-      const newNuked = [...nukedIds, id];
-      setNukedIds(newNuked);
-      localStorage.setItem('nukedRestaurants', JSON.stringify(newNuked));
-      navigate('/');
-    }
-  };
-
-  const [showSausageScore, setShowSausageScore] = useState(false);
 
   const goToNext = (currentId) => {
     const currentIndex = visibleRestaurants.findIndex(r => r.id === currentId);
@@ -568,7 +674,7 @@ export default function App() {
                 <div className="p-8 pb-10 bg-[#2E59FB] text-white rounded-b-[48px] shadow-xl relative">
                   <div className="flex flex-col gap-6 mb-4">
                     <div className="flex justify-center mt-2">
-                       <span className="text-xl sm:text-2xl font-black text-[#FF00FF] uppercase tracking-[0.2em] text-center drop-shadow-[0_0_15px_rgba(255,0,255,0.8)] crazy-flicker bg-black/20 px-6 py-3 rounded-3xl border border-[#FF00FF]/30 backdrop-blur-sm flex items-center gap-2">
+                       <span className="text-xl sm:text-2xl font-black text-[#FF00FF] uppercase tracking-[0.2em] crazy-flicker bg-black/20 px-6 py-3 rounded-3xl border border-[#FF00FF]/30 backdrop-blur-sm flex items-center gap-2">
                          <span className="text-3xl">{selectedRestaurant.flag}</span>
                          <span>{selectedRestaurant.cuisine}</span>
                        </span>
@@ -661,8 +767,9 @@ export default function App() {
                         </p>
                       </div>
                     </div>
-                  </div>
 
+                    <SquadLeaderboard />
+                  </div>
                   {/* Hero Restaurant Image */}
                   <div className="aspect-[16/9] rounded-[32px] overflow-hidden shadow-xl border-4 border-white">
                     <ImageWithFallback 
@@ -730,18 +837,21 @@ export default function App() {
                       <span>Get Directions</span>
                     </a>
                     <button 
-                      onClick={() => setShowSausageScore(true)}
+                      onClick={handleSausageClick}
                       className="pointer-events-auto px-6 bg-[#2E59FB] hover:bg-[#1a44e5] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg transition-all active:scale-95 whitespace-nowrap"
                     >
                       I REALLY LIKE SAUSAGE
                     </button>
                   </div>
                   {showSausageScore && (
-                    <div className="pointer-events-auto bg-[#0E2433] text-[#C8FC2C] text-[10px] font-black uppercase tracking-widest p-3 rounded-xl text-center shadow-2xl border border-[#C8FC2C]/20 animate-bounce">
-                      Currently, Richie has the high score! 👑
+                    <div 
+                      onClick={handleSausageClick}
+                      className="pointer-events-auto bg-[#0E2433] text-[#C8FC2C] text-[10px] font-black uppercase tracking-widest p-3 rounded-xl text-center shadow-2xl border border-[#C8FC2C]/20 animate-bounce cursor-pointer hover:bg-black/80 transition-colors"
+                    >
+                      Currently, {sausageState.currentWinner} has the high score! {sausageState.isSettled ? '🏆' : '👑'}
                     </div>
                   )}
-                  <div className="h-4"></div> {/* Safety space at the bottom */}
+                  <div className="h-4 sm:hidden"></div> {/* Extra safety space for mobile browsers */}
                 </div>
               </div>
             )}
