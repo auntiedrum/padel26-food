@@ -573,6 +573,20 @@ export default function App() {
     <div className="min-h-screen bg-[#0E2433] flex items-center justify-center p-0 sm:p-4">
       <div className="w-full max-w-md bg-[#F5F7FF] min-h-screen sm:min-h-[85vh] sm:rounded-[32px] overflow-hidden flex flex-col shadow-[0_32px_64px_-15px_rgba(0,0,0,0.5)] app-container relative">
         
+        {/* Sticky Itinerary Bar */}
+        <div className="bg-[#0E2433]/90 backdrop-blur-md px-6 py-2.5 flex items-center justify-between sticky top-0 z-50 border-b border-white/5">
+          <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Padel tour 26</span>
+          <a 
+            href="https://padel26.netlify.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] font-black text-[#C8FC2C] uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
+            <span>Main Itinerary</span>
+            <ExternalLink size={12} className="mt-[-1px]" />
+          </a>
+        </div>
+
         {/* Playtomic Style Header */}
         <header className="bg-[#2E59FB] px-8 pt-8 pb-6 flex flex-col gap-6 sticky top-0 z-30">
           <div className="flex items-center justify-between">
