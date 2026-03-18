@@ -857,41 +857,41 @@ export default function App() {
                     );
                   })()}
                 </div>
-
-                {/* Sticky Mobile-Style Footer Bar */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 pt-6 bg-gradient-to-t from-white via-white/40 to-transparent z-50 pointer-events-none">
-                  <div className="bg-[#0E2433] rounded-3xl p-3 shadow-2xl border border-white/10 flex items-center gap-3 pointer-events-auto max-w-[90%] mx-auto">
-                    <a
-                      href={generateMapsUrl(selectedRestaurant.name)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 bg-[#C8FC2C] hover:bg-[#b8ea28] text-black py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95"
-                    >
-                      <Navigation size={16} className="fill-current" />
-                      <span>Directions</span>
-                    </a>
-                    <button 
-                      onClick={handleSausageClick}
-                      className="px-5 bg-[#2E59FB] hover:bg-[#1a44e5] text-white py-3 rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all active:scale-95 whitespace-nowrap"
-                    >
-                      SAUSAGE?
-                    </button>
-                  </div>
-                  
-                  {showSausageScore && (
-                    <div 
-                      onClick={handleSausageClick}
-                      className="pointer-events-auto mt-2 bg-black text-[#C8FC2C] text-[9px] font-black uppercase tracking-widest py-2 px-4 rounded-xl text-center shadow-2xl border border-[#C8FC2C]/30 animate-bounce cursor-pointer hover:bg-black/90 transition-colors mx-auto w-fit"
-                    >
-                      Richie high score! {sausageState.isSettled ? '🏆' : '👑'}
-                    </div>
-                  )}
                 </div>
+              )}
+            </div>
+
+        {activeView === 'detail' && selectedRestaurant && (
+          <div className="absolute bottom-0 left-0 right-0 z-[100] bg-[#0E2433] border-t border-white/10 shadow-[0_-15px_40px_rgba(0,0,0,0.8)] pb-safe-area p-3 flex flex-col gap-2">
+            <div className="flex gap-2">
+              <a
+                href={generateMapsUrl(selectedRestaurant.name)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-3 flex-[3] bg-[#C8FC2C] hover:bg-[#b8ea28] text-black py-4 rounded-xl font-black text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg"
+              >
+                <Navigation size={18} className="fill-current" />
+                <span>Get Directions</span>
+              </a>
+              <button 
+                onClick={handleSausageClick}
+                className="flex-1 bg-[#2E59FB] hover:bg-[#1a44e5] text-white px-4 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 whitespace-nowrap border border-white/10"
+              >
+                🌭
+              </button>
+            </div>
+            {showSausageScore && (
+              <div 
+                onClick={handleSausageClick}
+                className="mt-2 bg-black text-[#C8FC2C] text-[9px] font-black uppercase tracking-widest py-1 px-4 rounded-full text-center shadow-lg border border-[#C8FC2C]/20 animate-bounce cursor-pointer flex items-center gap-2"
+              >
+                Score! <span>{sausageState.isSettled ? '🏆' : '👑'}</span>
               </div>
             )}
           </div>
-        </div>
+        )}
       </div>
     </div>
+  </div>
   );
 }
